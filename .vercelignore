@@ -1,0 +1,40 @@
+# Vercel runs only the Python function in api/index.py (see vercel.json) and
+# serves the pre-built frontend bundle from backend/app/templates/. Everything
+# below is source that is already compiled, or material the deployment never
+# reads. Excluding it keeps the upload and the function bundle small.
+#
+# Do NOT add a blanket "*.md" rule: backend/prompts/agent_skill.md and
+# backend/prompts/chat_system_prompt.md are loaded at runtime by
+# chat_engine.py and settings_service.py.
+
+.git
+.github
+.venv
+venv
+node_modules
+
+# Documentation and developer tooling
+docs
+scripts
+AGENTS.md
+CHANGELOG.md
+SECURITY.md
+THIRD_PARTY_NOTICES.md
+CITATION.cff
+AUTHORS.md
+license-policy.json
+pyproject.toml
+.python-version
+
+# Tests (no test runs in the deployed function)
+backend/tests
+engine/tests
+frontend/tests
+
+# Engine documentation only; engine/ itself is imported by the backend
+engine/docs
+
+# Frontend sources: the deployed UI is the pre-built bundle already committed
+# under backend/app/templates/. The Textual TUI under frontend/ is a separate
+# desktop client that the serverless function never imports.
+frontend

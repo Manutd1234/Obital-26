@@ -1,0 +1,29 @@
+{
+  "allowed_licenses": [
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "LGPL-3.0-only",
+    "MIT",
+    "MPL-2.0",
+    "Python-2.0",
+    "Apache-2.0 OR BSD-3-Clause"
+  ],
+  "package_licenses": {
+    "alembic": "MIT",
+    "argon2-cffi": "MIT",
+    "cryptography": "Apache-2.0 OR BSD-3-Clause",
+    "exa-py": "MIT",
+    "fastapi": "MIT",
+    "openai": "Apache-2.0",
+    "psycopg": "LGPL-3.0-only",
+    "pydantic": "MIT",
+    "pypdf": "BSD-3-Clause",
+    "python-dotenv": "BSD-3-Clause",
+    "python-multipart": "Apache-2.0",
+    "sentence-transformers": "Apache-2.0",
+    "sqlalchemy": "MIT",
+    "uvicorn": "BSD-3-Clause"
+  }
+}

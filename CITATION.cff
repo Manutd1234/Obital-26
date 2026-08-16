@@ -1,0 +1,7 @@
+cff-version: 1.2.0
+message: "If you use this project, please cite it as below."
+title: "Obital"
+authors:
+  - name: Asdao
+license: MIT
+date-released: 2026-08-10

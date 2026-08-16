@@ -1,0 +1,4 @@
+# Local env overrides (never commit) — includes the dev no-auth flag
+*.local
+.env.local
+.env.*.local

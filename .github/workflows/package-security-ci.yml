@@ -1,0 +1,107 @@
+name: Package Security CI
+
+on:
+  pull_request:
+    paths:
+      - "requirements.txt"
+      - "backend/requirements.txt"
+      - "backend/requirements.lock.in"
+      - "backend/requirements.lock.txt"
+      - "frontend/package.json"
+      - "frontend/package-lock.json"
+      - "frontend/requirements.txt"
+      - "frontend/requirements.lock.in"
+      - "frontend/requirements.lock.txt"
+      - "scripts/dev/run_backend_cloud.ps1"
+      - ".github/workflows/package-security-ci.yml"
+  push:
+    branches:
+      - main
+      - test-good-try
+    paths:
+      - "requirements.txt"
+      - "backend/requirements.txt"
+      - "backend/requirements.lock.in"
+      - "backend/requirements.lock.txt"
+      - "frontend/package.json"
+      - "frontend/package-lock.json"
+      - "frontend/requirements.txt"
+      - "frontend/requirements.lock.in"
+      - "frontend/requirements.lock.txt"
+      - "scripts/dev/run_backend_cloud.ps1"
+      - ".github/workflows/package-security-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  python-package-security:
+    name: Python Package Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+          cache-dependency-path: |
+            requirements.txt
+            backend/requirements.txt
+            backend/requirements.lock.txt
+            frontend/requirements.lock.txt
+
+      - name: Install audit tooling
+        run: python -m pip install --upgrade "pip==25.1.1" "pip-audit==2.9.0"
+
+      - name: Verify backend lock uses hashes
+        run: python -m pip install --require-hashes --no-deps --dry-run -r backend/requirements.lock.txt
+
+      - name: Verify frontend Python lock uses hashes
+        run: python -m pip install --require-hashes --no-deps --dry-run -r frontend/requirements.lock.txt
+
+      - name: Audit root Python requirements
+        # No --disable-pip here. requirements.txt is what Vercel installs and
+        # it carries >= ranges, so it is neither hashed nor exactly pinned --
+        # the two things --disable-pip requires. Letting pip-audit resolve the
+        # ranges itself is also the more faithful check, since it audits the
+        # transitive tree the deployment actually gets.
+        run: python -m pip_audit -r requirements.txt
+
+      - name: Audit backend Python requirements
+        # GHSA-rrmf-rvhw-rf47 / CVE-2025-3000 affects legacy torch.jit.script.
+        # Remove this exception when PyTorch publishes a stable fixed release.
+        run: python -m pip_audit --disable-pip -r backend/requirements.lock.txt --ignore-vuln GHSA-rrmf-rvhw-rf47 --ignore-vuln CVE-2025-3000
+
+      - name: Audit frontend Python requirements
+        run: python -m pip_audit --disable-pip -r frontend/requirements.lock.txt
+
+  npm-package-security:
+    name: Frontend npm Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install from package lock
+        working-directory: frontend
+        run: npm ci
+
+      - name: Audit npm packages
+        run: python scripts/check_npm_audit.py --audit-level high --dir frontend

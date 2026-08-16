@@ -1,0 +1,13 @@
+fastapi==0.136.3
+uvicorn==0.48.0
+python-multipart>=0.0.31
+sqlalchemy==2.0.50
+psycopg[binary]==3.3.4
+alembic==1.18.4
+cryptography>=48.0.1
+argon2-cffi==25.1.0
+pydantic==2.13.4
+pypdf==6.15.0
+python-dotenv==1.2.2
+openai==2.38.0
+exa-py>=1.14.0

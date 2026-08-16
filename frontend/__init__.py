@@ -1,0 +1,1 @@
+"""Frontend Textual app package."""

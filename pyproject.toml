@@ -1,0 +1,35 @@
+# Tooling configuration only. Obital is run from a checkout, not installed as
+# a distribution, so there is no [project] table and no build backend.
+
+[tool.pytest.ini_options]
+# The suite imports `backend.app...`, `engine...` and `frontend...` as
+# top-level packages, which only resolves when the repository root is on
+# sys.path. Previously that happened by accident because CI invokes
+# `python -m pytest` (which prepends the cwd); a plain `pytest` would fail.
+pythonpath = ["."]
+# No `testpaths` on purpose. Parts of backend/tests and frontend/tests are a
+# legacy baseline that does not collect cleanly (see backend/tests/README.md),
+# so declaring a default test root here would make a bare `pytest` look broken.
+# The maintained evidence groups are the ones CI runs; see
+# .github/workflows/quality-tests.yml.
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+extend-exclude = [
+    "backend/app/templates",
+    "frontend/dist",
+    "frontend/node_modules",
+]
+
+[tool.ruff.lint]
+# Deliberately conservative: this codebase has no lint history, so the rule
+# set is limited to checks that flag real defects rather than style drift.
+select = ["E4", "E7", "E9", "F", "I", "B", "UP"]
+ignore = [
+    "B008",  # FastAPI dependency injection relies on calls in argument defaults
+]
+
+[tool.ruff.lint.per-file-ignores]
+# The engine package still exposes wildcard re-exports in a few places.
+"engine/**/__init__.py" = ["F401", "F403"]

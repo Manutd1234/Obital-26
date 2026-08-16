@@ -1,0 +1,44 @@
+name: Author Attribution CI
+
+on:
+  pull_request:
+    paths:
+      - "AUTHORS.md"
+      - "CITATION.cff"
+      - "LICENSE"
+      - "frontend/package.json"
+      - "scripts/check_author_attribution.py"
+      - ".github/workflows/author-attribution-ci.yml"
+  push:
+    branches:
+      - main
+      - test-good-try
+    paths:
+      - "AUTHORS.md"
+      - "CITATION.cff"
+      - "LICENSE"
+      - "frontend/package.json"
+      - "scripts/check_author_attribution.py"
+      - ".github/workflows/author-attribution-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  author-attribution:
+    name: SPDX Author Attribution
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Check author attribution
+        run: python scripts/check_author_attribution.py

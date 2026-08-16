@@ -1,0 +1,46 @@
+name: License CI
+
+on:
+  pull_request:
+    paths:
+      - "requirements.txt"
+      - "backend/requirements.txt"
+      - "frontend/package.json"
+      - "frontend/package-lock.json"
+      - "scripts/check_licenses.py"
+      - "license-policy.json"
+      - "THIRD_PARTY_NOTICES.md"
+      - ".github/workflows/license-ci.yml"
+  # No paths filter on push: the notices file silently drifted out of sync
+  # because new dependencies landed on a branch this workflow did not watch.
+  # Running on every push to a trunk branch is cheap and prevents that.
+  push:
+    branches:
+      - main
+      - test-good-try
+
+permissions:
+  contents: read
+
+jobs:
+  license-ci:
+    name: License Policy + Attribution
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Check licenses and attribution
+        run: >
+          python scripts/check_licenses.py
+          --policy license-policy.json
+          --notice THIRD_PARTY_NOTICES.md
+          --python-requirements requirements.txt
+          --python-requirements backend/requirements.txt
+          --npm-package-json frontend/package.json
