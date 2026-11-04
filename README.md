@@ -1,4 +1,4 @@
-# Obital — Privacy-first, gamified AI learning
+# Obital — Privacy-first, gamified AI learning platform
 
 [![Core Quality CI](https://github.com/Asdao/Obital/actions/workflows/quality-tests.yml/badge.svg?event=pull_request)](https://github.com/Asdao/Obital/actions/workflows/quality-tests.yml)
 
